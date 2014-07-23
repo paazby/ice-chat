@@ -11,6 +11,8 @@ var makeUrlSuffix = require('./lib/makeUrlSuffix');
 var handler = require('./lib/request-handler');
 
 var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
 app.configure(function() {
   app.use(partials());
@@ -47,6 +49,31 @@ app.post('/matches', iceAuthenticated, handler.postMatches);
 
 app.get('/*', serverUtil.send404);
 
+// app.get('/', function(req, res){
+//   res.sendfile('index.html');
+// });
+
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+  socket.on('chat message', function(msg){
+    io.to(msg.receiver).emit('chat message', {msg: msg.message /*, sender: msg.sender*/});
+    // socket.broadcast.emit('chat message', msg);
+  });
+
+  socket.on('join', function (data) {
+    socket.join(data.user); // We are using room of socket io
+  });
+
+});
 
 
-module.exports = app;
+// http.listen(3000, function(){
+//   console.log('listening on *:3000');
+// });
+
+module.exports.app = app;
+module.exports.http = http;
+
