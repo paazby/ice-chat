@@ -45,25 +45,22 @@ app.get('/allcandidates', iceAuthenticated, handler.serveCandidates);
 app.get('/matches', iceAuthenticated, handler.serveMatches);
 app.post('/matches', iceAuthenticated, handler.postMatches);
 
-
-
 app.get('/*', serverUtil.send404);
 
-// app.get('/', function(req, res){
-//   res.sendfile('index.html');
-// });
-
 io.on('connection', function(socket){
-  console.log('a user connected');
+    
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
   socket.on('chat message', function(msg){
-    io.to(msg.receiver).emit('chat message', {msg: msg.message /*, sender: msg.sender*/});
-    // socket.broadcast.emit('chat message', msg);
+ 
+    console.log(msg);
+    
+    io.to(msg.to).emit('chat message', {msg: msg.msg, from: msg.from});
   });
 
   socket.on('join', function (data) {
+    console.log('this user joined', data.user);
     socket.join(data.user); // We are using room of socket io
   });
 

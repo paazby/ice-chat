@@ -32,7 +32,7 @@
       socket.on('chat message', function(msg){
         // should only append to a somwhere holding
         // only msg.sender + receiver message
-        $('#messages').append($('<li>').text(msg));
+        $('#messages').append($('<li>').text(msg.msg));
       });
       var user = prompt("please enter your name");
       console.log(user);
